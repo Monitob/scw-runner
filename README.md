@@ -36,7 +36,33 @@ export SCW_DEFAULT_REGION="fr-par"
 git clone https://github.com/Monitob/scw-runner.git
 cd scw-runner
 
-# Set your credentials
+# Copy the example environment file and edit it with your credentials
+copy .env.example .env
+# Edit .env with your credentials using notepad or your favorite editor
+
+# Run a command (automatically loads .env file)
+.\scw.ps1 instance list
+```
+
+#### Using the Helper Script (Recommended)
+
+The `scw.ps1` helper script automatically loads environment variables from `.env`:
+
+```powershell
+# First time setup
+copy .env.example .env
+# Edit .env with your credentials
+
+# Then run any command - credentials are loaded automatically
+.\scw.ps1 instance list
+.\scw.ps1 server list
+.\scw.ps1 object bucket list
+```
+
+#### Manual Method (without .env file)
+
+```powershell
+# Set your credentials manually
 $env:SCW_ACCESS_KEY="SCWXXXXXXXXXXXXXXXXX"
 $env:SCW_SECRET_KEY="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 $env:SCW_DEFAULT_ORGANIZATION_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

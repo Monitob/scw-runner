@@ -120,6 +120,10 @@ function Invoke-DownloadScripts {
         $ps1Path = Join-Path $InstallDir "run-scw.ps1"
         Invoke-WebRequest -Uri "$baseUrl/run-scw.ps1" -OutFile $ps1Path -UseBasicParsing
 
+        # Download scw.ps1 (helper script that auto-loads .env)
+        $helperPath = Join-Path $InstallDir "scw.ps1"
+        Invoke-WebRequest -Uri "$baseUrl/scw.ps1" -OutFile $helperPath -UseBasicParsing
+
         # Download .env.example
         $envPath = Join-Path $InstallDir ".env.example"
         Invoke-WebRequest -Uri "$baseUrl/.env.example" -OutFile $envPath -UseBasicParsing
@@ -149,16 +153,17 @@ function Add-ToPath {
     $env:Path = [Environment]::GetEnvironmentVariable("Path", "User")
 }
 
-# Create wrapper script
+# Create wrapper script (alias to scw.ps1)
 function New-WrapperScript {
     Write-Info "Creating wrapper script..."
 
-    $wrapperPath = Join-Path $InstallDir "scw-runner.ps1"
+    $wrapperPath = Join-Path $InstallDir "scw.ps1"
 
+    # This wrapper calls the main scw.ps1 script from the install directory
     $wrapperContent = @"
 #!/usr/bin/env pwsh
-# scw-runner wrapper
-& "$InstallDir\run-scw.ps1" `$args
+# scw-runner wrapper - auto-loads .env and runs Scaleway CLI
+& "$InstallDir\scw.ps1" `$args
 "@
 
     Set-Content -Path $wrapperPath -Value $wrapperContent -Force
@@ -274,15 +279,16 @@ function Main {
     Write-Host "Next steps:"
     Write-Host "  1. Restart PowerShell or run: Refresh-Env"
     Write-Host "  2. Copy and edit: Copy-Item $InstallDir\.env.example $InstallDir\.env"
-    Write-Host "  3. Run: scw-runner version"
+    Write-Host "  3. Run: scw instance list"
     Write-Host ""
-    Write-Host "Or use directly: & '$InstallDir\run-scw.ps1' [command]"
+    Write-Host "The 'scw' command automatically loads your .env file!"
+    Write-Host "Or use directly: & '$InstallDir\scw.ps1' [command]"
     Write-Host ""
 
     # Test installation
-    if (Get-Command scw-runner -ErrorAction SilentlyContinue) {
+    if (Get-Command scw -ErrorAction SilentlyContinue) {
         Write-Info "Testing installation..."
-        & scw-runner version 2>$null
+        & scw version 2>$null
     }
 }
 
