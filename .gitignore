@@ -1,0 +1,22 @@
+# Environment files with sensitive data
+.env
+.env.local
+.env.*.local
+
+# Scaleway CLI config (if mounted inside the project)
+.scwrc
+.scw-config.yaml
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
